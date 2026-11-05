@@ -1,5 +1,265 @@
-cd ~/parsa-market
-git add index.html
-git commit -m "Update PARSA MARKET"
-git push
+
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>PARSA MARKET</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#080d18;color:#f5f7ff;font-family:Tahoma,Arial,sans-serif}
+header{background:#111b2e;padding:18px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;border-bottom:1px solid #263c59}
+.logo{font-size:25px;font-weight:bold;color:#53d9ff}
+nav{display:flex;gap:7px;flex-wrap:wrap}
+button{border:0;border-radius:9px;padding:11px 15px;background:#168acb;color:white;font-weight:bold;cursor:pointer;font-family:inherit}
+nav button{background:#25344d}
+button:hover{filter:brightness(1.2)}
+.hero{text-align:center;padding:65px 15px;background:radial-gradient(ellipse at top,#19466b,#080d18 75%)}
+.hero h1{font-size:38px;color:#55d9ff}
+.hero p{line-height:2;color:#bdc9df}
+.wrap{max-width:1100px;margin:auto;padding:25px 15px}
+h2{color:#55d9ff}
+.categories,.products{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:15px}
+.card{background:#121d30;border:1px solid #2b405d;border-radius:15px;padding:18px}
+.category{text-align:center;cursor:pointer;font-size:17px}
+.category:hover{border-color:#55d9ff}
+.product{display:flex;flex-direction:column;gap:10px}
+.product .price{color:#5be6a8;font-weight:bold;font-size:19px}
+.product small{color:#aab8d0}
+input,textarea,select{width:100%;padding:12px;margin:7px 0 13px;background:#0a1424;color:white;border:1px solid #354966;border-radius:9px;font-family:inherit}
+textarea{min-height:90px}
+section{margin-bottom:35px}
+.hidden{display:none!important}
+.notice{background:#17263b;padding:15px;border-radius:12px;line-height:2;color:#d1deef}
+footer{text-align:center;padding:30px;color:#91a2bd;border-top:1px solid #263653}
+#chatMessages{height:190px;overflow:auto;background:#091321;padding:10px;border-radius:10px;margin-bottom:10px}
+.msg{padding:10px;margin:7px 0;background:#1c304b;border-radius:9px}
+</style>
+</head>
+<body>
+
+<header>
+<div class="logo">⚡ PARSA MARKET</div>
+<nav>
+<button onclick="showSection('shop')">فروشگاه</button>
+<button onclick="showSection('ads')">آگهی‌ها</button>
+<button onclick="showSection('chat')">چت با مدیر</button>
+<button onclick="showSection('profile')">پروفایل</button>
+<button onclick="showSection('admin')">مدیریت</button>
+</nav>
+</header>
+
+<div class="hero">
+<div>🎮 فروشگاه محصولات گیمینگ</div>
+<h1>PARSA MARKET</h1>
+<p>بازار محصولات کالاف دیوتی و کلش آف کلنز</p>
+<button onclick="showSection('shop')">ورود به فروشگاه</button>
+</div>
+
+<main class="wrap">
+
+<section id="shop">
+<h2>🔥 دسته‌بندی محصولات</h2>
+<div class="categories" id="categories"></div>
+<h2>🛒 محصولات فروشگاه</h2>
+<div class="products" id="products"></div>
+</section>
+
+<section id="ads" class="hidden">
+<h2>📢 آگهی‌های فروش</h2>
+<div class="notice">
+اگر می‌خواهی اکانت کالاف دیوتی یا کلش آف کلنز خودت را برای فروش معرفی کنی، از بخش چت با مدیر پیام بده.
+</div>
+<div class="products" id="adsList"></div>
+</section>
+
+<section id="chat" class="hidden">
+<h2>💬 چت با مدیر</h2>
+<div class="notice">پیام خود را بنویس. این نسخه نمایشی است و پیام‌ها فقط در همین مرورگر ذخیره می‌شوند.</div>
+<div id="chatMessages"></div>
+<input id="chatInput" placeholder="پیامت را بنویس...">
+<button onclick="sendMessage()">ارسال پیام</button>
+</section>
+
+<section id="profile" class="hidden">
+<h2>👤 پروفایل من</h2>
+<div class="card">
+<label>نام نمایشی</label>
+<input id="userName" placeholder="نام خود را وارد کن">
+<button onclick="saveProfile()">ذخیره نام</button>
+<p id="profileResult"></p>
+</div>
+</section>
+
+<section id="admin" class="hidden">
+<h2>🛠 پنل مدیریت</h2>
+<div class="notice">
+این پنل فعلاً نمایشی است؛ ورود امن مدیر و ذخیره‌سازی آنلاین هنوز پیاده‌سازی نشده است.
+</div>
+
+<div class="card">
+<h3>افزودن محصول</h3>
+<input id="pName" placeholder="نام محصول">
+<select id="pCategory"></select>
+<input id="pPrice" placeholder="قیمت (تومان)" type="number">
+<textarea id="pDescription" placeholder="توضیحات محصول"></textarea>
+<button onclick="addProduct()">ثبت محصول</button>
+</div>
+
+<div class="card" style="margin-top:15px">
+<h3>افزودن آگهی</h3>
+<input id="aName" placeholder="عنوان آگهی">
+<textarea id="aDescription" placeholder="توضیحات آگهی"></textarea>
+<button onclick="addAd()">ثبت آگهی</button>
+</div>
+
+<div class="card" style="margin-top:15px">
+<h3>افزودن دسته‌بندی جدید</h3>
+<input id="newCategory" placeholder="نام دسته‌بندی جدید">
+<button onclick="addCategory()">افزودن دسته‌بندی</button>
+</div>
+</section>
+
+</main>
+
+<footer>
+<p>PARSA MARKET ⚡</p>
+<p>فروشگاه محصولات گیمینگ</p>
+</footer>
+
+<script>
+const defaultCategories=[
+"اکانت کالاف دیوتی",
+"اکانت کلش آف کلنز",
+"سی‌پی و محصولات کالاف",
+"جم و محصولات کلش"
+];
+
+let categories=JSON.parse(localStorage.getItem("pm_categories")||"null")||defaultCategories;
+let products=JSON.parse(localStorage.getItem("pm_products")||"[]");
+let ads=JSON.parse(localStorage.getItem("pm_ads")||"[]");
+let messages=JSON.parse(localStorage.getItem("pm_messages")||"[]");
+
+function saveData(){
+localStorage.setItem("pm_categories",JSON.stringify(categories));
+localStorage.setItem("pm_products",JSON.stringify(products));
+localStorage.setItem("pm_ads",JSON.stringify(ads));
+localStorage.setItem("pm_messages",JSON.stringify(messages));
+}
+
+function showSection(id){
+document.querySelectorAll("main section").forEach(s=>s.classList.add("hidden"));
+document.getElementById(id).classList.remove("hidden");
+}
+
+function renderCategories(){
+document.getElementById("categories").innerHTML=categories.map(c=>
+`<div class="card category" onclick="filterProducts('${c.replace(/'/g,"\\'")}')">🎮<br><br>${c}</div>`
+).join("");
+document.getElementById("pCategory").innerHTML=categories.map(c=>
+`<option>${c}</option>`).join("");
+}
+
+function renderProducts(list=products){
+document.getElementById("products").innerHTML=list.length?list.map(p=>
+`<div class="card product">
+<h3>${escapeHTML(p.name)}</h3>
+<small>${escapeHTML(p.category)}</small>
+<p>${escapeHTML(p.description||"بدون توضیحات")}</p>
+<div class="price">${p.price?Number(p.price).toLocaleString("fa-IR")+" تومان":"تماس برای جزئیات"}</div>
+<button onclick="showSection('chat')">سفارش و پرسش</button>
+</div>`).join(""):"<p>هنوز محصولی ثبت نشده است.</p>";
+}
+
+function filterProducts(category){
+renderProducts(products.filter(p=>p.category===category));
+showSection("shop");
+}
+
+function addProduct(){
+const name=document.getElementById("pName").value.trim();
+const category=document.getElementById("pCategory").value;
+const price=document.getElementById("pPrice").value;
+const description=document.getElementById("pDescription").value.trim();
+if(!name){alert("نام محصول را وارد کن");return}
+products.push({name,category,price,description});
+saveData();
+renderProducts();
+document.getElementById("pName").value="";
+document.getElementById("pPrice").value="";
+document.getElementById("pDescription").value="";
+alert("محصول به فهرست این مرورگر اضافه شد.");
+}
+
+function addCategory(){
+const name=document.getElementById("newCategory").value.trim();
+if(!name)return;
+if(categories.includes(name)){alert("این دسته‌بندی وجود دارد");return}
+categories.push(name);
+saveData();
+renderCategories();
+document.getElementById("newCategory").value="";
+alert("دسته‌بندی اضافه شد.");
+}
+
+function renderAds(){
+document.getElementById("adsList").innerHTML=ads.length?ads.map(a=>
+`<div class="card"><h3>${escapeHTML(a.name)}</h3><p>${escapeHTML(a.description)}</p></div>`
+).join(""):"<p>هنوز آگهی‌ای ثبت نشده است.</p>";
+}
+
+function addAd(){
+const name=document.getElementById("aName").value.trim();
+const description=document.getElementById("aDescription").value.trim();
+if(!name){alert("عنوان آگهی را وارد کن");return}
+ads.push({name,description});
+saveData();
+renderAds();
+document.getElementById("aName").value="";
+document.getElementById("aDescription").value="";
+alert("آگهی ثبت شد.");
+}
+
+function renderMessages(){
+document.getElementById("chatMessages").innerHTML=messages.map(m=>
+`<div class="msg"><b>${escapeHTML(m.sender)}:</b> ${escapeHTML(m.text)}</div>`
+).join("");
+}
+
+function sendMessage(){
+const input=document.getElementById("chatInput");
+const text=input.value.trim();
+if(!text)return;
+messages.push({sender:"بازدیدکننده",text});
+saveData();
+renderMessages();
+input.value="";
+}
+
+function saveProfile(){
+const name=document.getElementById("userName").value.trim();
+if(!name)return;
+localStorage.setItem("pm_user",name);
+document.getElementById("profileResult").textContent="نام ذخیره شد: "+name;
+}
+
+function escapeHTML(value){
+return String(value).replace(/[&<>"']/g,c=>({
+"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+}[c]));
+}
+
+const savedName=localStorage.getItem("pm_user");
+if(savedName){
+document.getElementById("userName").value=savedName;
+document.getElementById("profileResult").textContent="نام ذخیره‌شده: "+savedName;
+}
+
+renderCategories();
+renderProducts();
+renderAds();
+renderMessages();
+</script>
+</body>
+</html>
 
